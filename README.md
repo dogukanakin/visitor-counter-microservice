@@ -1,120 +1,182 @@
 # Real-Time Visitor Counter Microservice
 
-Herhangi bir web sitesine kolayca eklenebilen, gerçek zamanlı ziyaretçi sayacı mikroservisi. Socket.io ve Express.js kullanarak aktif ziyaretçi sayınızı takip eder.
+A real-time visitor counter microservice that can be easily integrated into any website. It tracks active visitors using Socket.io and Express.js.
 
-![Visitor Counter Demo](https://via.placeholder.com/600x300.png?text=Visitor+Counter+Demo)
+![Visitor Counter Demo](./src/public/images/dashboard.png)
 
-## 🚀 Özellikler
+## 🚀 Features
 
-- **Gerçek Zamanlı Takip**: Aktif ziyaretçi sayısını anlık olarak günceller
-- **Kolay Entegrasyon**: Tek bir script ekleyerek herhangi bir web sitesine kolayca entegre edilir
-- **Özelleştirilebilir Görünüm**: Renk, pozisyon, metin ve dil seçenekleri
-- **Çift Yönlü İletişim**: WebSocket ile gerçek zamanlı iletişim
-- **API Desteği**: REST API ile ziyaretçi sayısına erişim
-- **Docker Desteği**: Kolay deployment için Docker entegrasyonu
+- **Real-Time Tracking**: Updates visitor count instantly
+- **Easy Integration**: Add a single script to any website
+- **Customizable Interface**: Color, position, text, and language options
+- **Two-Way Communication**: Real-time updates via WebSockets
+- **API Support**: Access visitor data through REST API
+- **Docker Support**: Easy deployment with Docker integration
+- **Analytics Dashboard**: Track visitor metrics
 
-## 🔧 Kurulum
+## 🔧 Installation
 
-### Docker ile Kurulum (Önerilen)
+### Docker Installation (Recommended)
 
 ```bash
-# Repoyu klonlayın
+# Clone the repository
 git clone https://github.com/dogukanakinn/visitor-counter-microservice.git
 cd visitor-counter-microservice
 
-# Docker ile çalıştırın
+# Run with Docker
 docker-compose up -d
 ```
 
-### Manuel Kurulum
+### Manual Installation
 
 ```bash
-# Repoyu klonlayın
+# Clone the repository
 git clone https://github.com/dogukanakinn/visitor-counter-microservice.git
 cd visitor-counter-microservice
 
-# Bağımlılıkları yükleyin
+# Install dependencies
 npm install
 
-# .env dosyasını düzenleyin
+# Configure environment variables
 cp .env.example .env
 
-# Geliştirme modunda başlatın
+# Start in development mode
 npm run dev
 
-# veya
-# Üretime hazır derleyin ve başlatın
+# or
+# Build and start for production
 npm run build
 npm start
 ```
 
-## 🧩 Web Sitenize Entegrasyon
+## 🧩 Integration with Your Website
 
-Visitor Counter'ı web sitenize entegre etmenin en kolay yolu aşağıdaki scripti eklemektir:
+The easiest way to integrate the Visitor Counter into your website is to add the following script:
 
-### 1. Tek Script Entegrasyonu (En Kolay)
+### 1. Simple Integration (Easiest)
 
 ```html
-<!-- Visitor Counter entegrasyonu -->
-<script src="https://visitors.studyaitool.com/client.js"></script>
+<!-- Visitor Counter integration -->
+<script src="https://visitors.yourdomain.com/client.js"></script>
 ```
 
-Bu script, web sayfanızın sağ alt köşesine otomatik olarak bir ziyaretçi sayacı ekleyecektir.
+This script will automatically add a visitor counter to the bottom right corner of your web page.
 
-### 2. Özelleştirilmiş Entegrasyon
+### 2. Customized Integration
 
-config parametrelerini düzenleyerek sayacın görünümünü ve davranışını özelleştirebilirsiniz:
+You can customize the appearance and behavior of the counter by configuring parameters:
 
 ```html
 <script>
-  // Visitor Counter konfigürasyonu
+  // Visitor Counter configuration
   window.visitorCounterConfig = {
     position: 'top-right', // 'bottom-right', 'bottom-left', 'top-right', 'top-left'
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     textColor: 'white',
-    language: 'tr', // 'en' veya 'tr'
-    hideAfterSeconds: 5, // 5 saniye sonra gizle (0 = her zaman göster)
+    language: 'en', // 'en' or 'tr'
+    hideAfterSeconds: 5, // Hide after 5 seconds (0 = always show)
   };
 </script>
-<script src="https://visitors.studyaitool.com/client.js"></script>
+<script src="https://visitors.yourdomain.com/client.js"></script>
 ```
 
-### 3. Kendi Elementiniz İçine Entegre Edin
+### 3. Integrate into Your Own Element
 
 ```html
-<!-- Ziyaretçi sayacını göstermek istediğiniz div -->
+<!-- The div where you want to display the visitor counter -->
 <div id="visitor-counter"></div>
 
 <script>
-  // Bu ID'yi kullanarak kendi elementinize entegre edin
+  // Use this ID to integrate into your own element
   window.visitorCounterConfig = {
     useExistingElement: true,
-    // Diğer özelleştirmeler...
+    // Other customizations...
   };
 </script>
-<script src="https://visitors.studyaitool.com/client.js"></script>
+<script src="https://visitors.yourdomain.com/client.js"></script>
 ```
 
-## 📚 API Referansı
+### 4. Next.js Integration
 
-### WebSocket Olayları
+For Next.js applications, you can use the Script component:
 
-Visitor Counter servisi, WebSocket üzerinden aşağıdaki olayları yayınlar:
+```jsx
+import Script from 'next/script'
 
-- `visitor-count`: Ziyaretçi sayısı değiştiğinde yayınlanır
+// In your component or layout:
+<Script
+  id="visitor-counter-script"
+  strategy="afterInteractive"
+  src={process.env.NEXT_PUBLIC_VISITOR_COUNTER_URL_PROD}
+  data-debug={process.env.NODE_ENV === 'development' ? 'true' : 'false'}
+/>
+```
+
+The `data-debug="true"` attribute enables debug mode, which is recommended for local development environments. This will print additional logs to the console to help with debugging.
+
+You can also manually set it based on your environment:
+
+```jsx
+<Script
+  id="visitor-counter-script"
+  strategy="afterInteractive"
+  src="https://visitors.yourdomain.com/client.js"
+  data-debug="true"  // Set to "false" in production
+/>
+```
+
+### 5. Complete HTML Page Example
+
+Here's a complete example of how to integrate the visitor counter into an HTML page:
+
+```html
+    <!-- Visitor Counter Script -->
+    <script 
+        src="https://visitors.yourdomain.com/client.js" 
+        data-debug="true">
+    </script>
+```
+
+In this example:
+- We've included the visitor counter script at the bottom of the body
+- We're using `data-debug="true"` which enables debug mode (should be removed in production)
+- We've created a custom element with ID "my-visitor-counter" to house the counter
+- We've set the debug mode to automatically activate on localhost
+
+## �� API Reference
+
+### Swagger Documentation
+
+The API is fully documented using Swagger (OpenAPI). Once the server is running, you can access the interactive API documentation at:
+
+```
+http://localhost:5001/api-docs
+```
+
+This provides a user-friendly interface to:
+- Browse all available API endpoints
+- See request/response schemas
+- Test API calls directly from the browser
+- Download the OpenAPI specification
+
+### WebSocket Events
+
+The Visitor Counter service broadcasts the following events via WebSocket:
+
+- `visitor-count`: Broadcasted when the visitor count changes
   ```js
-  // Örnek veri
+  // Example data
   { count: 5 }
   ```
 
 ### REST API Endpoints
 
-- `GET /api/visitors`: Mevcut ziyaretçi sayısını döndürür
+- `GET /api/visitors`: Returns the current visitor count
   ```json
   { "count": 5 }
   ```
 
-- `GET /api/visitors/details`: Bağlı ziyaretçiler hakkında detaylı bilgi verir
+- `GET /api/visitors/details`: Returns detailed information about connected visitors
   ```json
   {
     "count": 5,
@@ -132,32 +194,32 @@ Visitor Counter servisi, WebSocket üzerinden aşağıdaki olayları yayınlar:
 
 ## 🚀 Deployment
 
-### Önerilen Servisler
+### Recommended Services
 
 - [Railway](https://railway.app)
 - [Render](https://render.com)
 - [DigitalOcean App Platform](https://www.digitalocean.com/products/app-platform/)
 - [Heroku](https://heroku.com)
-- Kendi VPS veya Sunucu çözümleriniz
+- Your own VPS or Server solutions
 
 ### Docker Deployment
 
 ```bash
-# Docker imajı oluşturun
+# Build Docker image
 docker build -t visitor-counter .
 
-# Imajı çalıştırın
+# Run the image
 docker run -p 5001:5001 -e PORT=5001 -e ALLOWED_ORIGINS=https://yourwebsite.com visitor-counter
 ```
 
-## 📝 Lisans
+## 📝 License
 
 MIT
 
 ---
 
-Geliştirici: [Your Name](https://github.com/yourusername)  
-Proje: [GitHub Repository](https://github.com/yourusername/visitor-counter) 
+Developer: [Your Name](https://github.com/yourusername)  
+Project: [GitHub Repository](https://github.com/dogukanakinn/visitor-counter-microservice)
 
 
 
