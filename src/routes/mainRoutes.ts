@@ -7,7 +7,7 @@ const setupBaseRoutes = (router: Router, socketService: SocketService) => {
   router.get('/', mainController.getInfo(socketService));
   router.get('/health', mainController.healthCheck());
   router.get('/config', mainController.getConfig());
-  router.get('/client.js', mainController.getClientScript());
+  router.get('/client.js', mainController.getMinifiedClientScript());
 };
 
 // Ana route creator fonksiyonu

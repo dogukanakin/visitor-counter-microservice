@@ -89,8 +89,37 @@ export const mainController = {
 
       // Set content type
       res.set('Content-Type', 'application/javascript');
+      // Add cache control header
+      res.set('Cache-Control', 'public, max-age=86400'); // 24 hours
 
       // No need to modify script content anymore, send as is
+      res.send(content);
+    });
+  },
+
+  // Minified Client script endpoint'i
+  getMinifiedClientScript: () => (req: Request, res: Response) => {
+    const scriptPath = path.join(__dirname, '..', 'client', 'client.min.js');
+    
+    // Check if file exists
+    if (!fs.existsSync(scriptPath)) {
+      res.status(404).send('Minified client script not found');
+      return;
+    }
+    
+    // Read the script content
+    fs.readFile(scriptPath, 'utf8', (err, content) => {
+      if (err) {
+        res.status(500).send('Error loading script');
+        return;
+      }
+
+      // Set content type
+      res.set('Content-Type', 'application/javascript');
+      // Add cache control header
+      res.set('Cache-Control', 'public, max-age=86400'); // 24 hours
+
+      // Send minified script as is
       res.send(content);
     });
   }
