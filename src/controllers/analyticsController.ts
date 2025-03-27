@@ -10,7 +10,9 @@ export const analyticsController = {
       activeVisitors: analyticsService.getActiveVisitors(),
       popularPages: analyticsService.getPopularPages(5),
       topEntryPages: analyticsService.getTopEntryPages(5),
-      topExitPages: analyticsService.getTopExitPages(5)
+      topExitPages: analyticsService.getTopExitPages(5),
+      lastResetTime: analyticsService.getLastResetTime().toISOString(),
+      autoResetInterval: '60 dakika'
     });
   },
 
@@ -66,5 +68,15 @@ export const analyticsController = {
     }));
     
     res.json({ clients });
+  },
+
+  // Manuel veri sıfırlama
+  resetAnalytics: (analyticsService: AnalyticsService) => (req: Request, res: Response) => {
+    analyticsService.resetAnalytics();
+    res.json({
+      success: true,
+      message: 'Analitik verileri sıfırlandı',
+      resetTime: analyticsService.getLastResetTime().toISOString()
+    });
   }
 }; 

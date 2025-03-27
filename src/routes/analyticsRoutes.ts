@@ -15,6 +15,10 @@ const setupVisitorRoutes = (router: Router, analyticsService: AnalyticsService) 
   router.get('/clients', analyticsController.getClientDetails(analyticsService));
 };
 
+const setupAdminRoutes = (router: Router, analyticsService: AnalyticsService) => {
+  router.post('/reset', analyticsController.resetAnalytics(analyticsService));
+};
+
 // Ana route creator fonksiyonu
 export function createAnalyticsRoutes(analyticsService: AnalyticsService): Router {
   const router = Router();
@@ -25,6 +29,7 @@ export function createAnalyticsRoutes(analyticsService: AnalyticsService): Route
   // Alt route gruplarını ayarla
   setupPageRoutes(router, analyticsService);
   setupVisitorRoutes(router, analyticsService);
+  setupAdminRoutes(router, analyticsService);
 
   return router;
 } 

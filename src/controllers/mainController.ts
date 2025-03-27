@@ -47,6 +47,7 @@ export const mainController = {
         health: `${baseUrl}/health`,
         config: `${baseUrl}/config`,
         clientScript: `${baseUrl}/client.js`,
+        dashboard: `${baseUrl}/dashboard`,
         
         // Analytics endpoints
         analytics: {
@@ -68,6 +69,19 @@ export const mainController = {
       activeConnections: socketService.getActiveConnections(),
       visitorCount: socketService.getVisitorCount()
     });
+  },
+
+  // Dashboard endpoint'i
+  getDashboard: () => (req: Request, res: Response) => {
+    const dashboardPath = path.join(__dirname, '..', 'public', 'dashboard.html');
+    
+    // Check if file exists
+    if (!fs.existsSync(dashboardPath)) {
+      res.status(404).send('Dashboard not found');
+      return;
+    }
+    
+    res.sendFile(dashboardPath);
   },
 
   // Client script endpoint'i

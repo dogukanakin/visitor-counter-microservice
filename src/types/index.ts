@@ -36,6 +36,7 @@ export interface PageAnalytics {
   bounceRate: number; // percentage
   isEntryPage: number; // count of times it was an entry page
   isExitPage: number; // count of times it was an exit page
+  _durations?: number[]; // Sayfa ziyaret sürelerini kaydetmek için kullanılır (internal)
 }
 
 // Visitor count response interface

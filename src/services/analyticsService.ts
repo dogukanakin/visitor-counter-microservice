@@ -3,15 +3,49 @@ import { EnhancedClientInfo, PageVisit, PageAnalytics, VisitorJourney } from '..
 export class AnalyticsService {
   private clientAnalytics: Map<string, EnhancedClientInfo> = new Map<string, EnhancedClientInfo>();
   private pageAnalytics: Map<string, PageAnalytics> = new Map<string, PageAnalytics>();
+  private resetTimer: NodeJS.Timeout | null = null;
+  private lastResetTime: Date = new Date();
+  private readonly RESET_INTERVAL = 60 * 60 * 1000; // 60 dakika (milisaniye cinsinden)
   
   constructor() {
     // Initialize with empty data
     this.resetAnalytics();
+    
+    // Set up auto-reset timer
+    this.setupAutoReset();
   }
 
-  private resetAnalytics(): void {
+  /**
+   * Set up auto-reset timer (60 dakika)
+   */
+  private setupAutoReset(): void {
+    // Clear any existing timer
+    if (this.resetTimer) {
+      clearInterval(this.resetTimer);
+    }
+    
+    // Set up new timer to reset analytics every 60 minutes
+    this.resetTimer = setInterval(() => {
+      console.log('Auto-resetting analytics data (60-minute interval)');
+      this.resetAnalytics();
+    }, this.RESET_INTERVAL);
+  }
+
+  /**
+   * Get last reset time
+   */
+  public getLastResetTime(): Date {
+    return this.lastResetTime;
+  }
+
+  /**
+   * Reset all analytics data
+   */
+  public resetAnalytics(): void {
     this.clientAnalytics.clear();
     this.pageAnalytics.clear();
+    this.lastResetTime = new Date();
+    console.log(`Analytics data reset at ${this.lastResetTime.toISOString()}`);
   }
 
   /**
@@ -67,6 +101,9 @@ export class AnalyticsService {
       // Calculate duration
       if (pageVisit.duration === null) {
         pageVisit.duration = (now.getTime() - pageVisit.timestamp.getTime()) / 1000;
+        
+        // Update average duration for this page after calculating the duration
+        this.updateAverageDuration(path, pageVisit.duration);
       }
       
       // If this is the last page they visited, mark it as the exit page
@@ -105,6 +142,9 @@ export class AnalyticsService {
         // Calculate duration for the last page
         if (lastPageVisit.duration === null) {
           lastPageVisit.duration = (now.getTime() - lastPageVisit.timestamp.getTime()) / 1000;
+          
+          // Update average duration
+          this.updateAverageDuration(lastPageVisit.path, lastPageVisit.duration);
         }
         
         // Calculate session duration
@@ -262,6 +302,32 @@ export class AnalyticsService {
     }
     
     // Save updated page stats
+    this.pageAnalytics.set(path, pageStats);
+  }
+
+  /**
+   * Update average duration for a page
+   */
+  private updateAverageDuration(path: string, duration: number): void {
+    const pageStats = this.pageAnalytics.get(path);
+    if (!pageStats) return;
+    
+    // Hesaplanan durations dizisi yoksa oluştur
+    if (!pageStats._durations) {
+      pageStats._durations = [];
+    }
+    
+    // Yeni süreyi ekle
+    pageStats._durations.push(duration);
+    
+    // Ortalama süreyi hesapla (0 olmayan süreler için)
+    const validDurations = pageStats._durations.filter(d => d > 0);
+    if (validDurations.length > 0) {
+      const totalDuration = validDurations.reduce((sum, d) => sum + d, 0);
+      pageStats.averageDuration = totalDuration / validDurations.length;
+    }
+    
+    // Güncelle
     this.pageAnalytics.set(path, pageStats);
   }
 

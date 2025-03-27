@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-sticky">
+                    <div class="d-flex justify-content-center align-items-center py-4">
+                        <h4 class="mb-0">Visitor Counter</h4>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#overview">
+                                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#visitors">
+                                <i class="bi bi-people me-2"></i> Visitors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#pages">
+                                <i class="bi bi-file-earmark-text me-2"></i> Pages
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#journeys">
+                                <i class="bi bi-signpost-split me-2"></i> User Journeys
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard Overview</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshBtn">
+                                <i class="bi bi-arrow-repeat"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" id="resetBtn">
+                                <i class="bi bi-trash"></i> Reset Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last reset info -->
+                <div class="alert alert-info mb-4" role="alert">
+                    <div><strong>Last Reset:</strong> <span id="lastResetTime">-</span></div>
+                    <div><small>Analytics data is automatically reset every 60 minutes</small></div>
+                </div>
+
+                <!-- Overview section -->
+                <section id="overview">
+                    <div class="row">
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Visitors</h5>
+                                    <h2 class="card-text" id="totalVisitors">0</h2>
+                                    <p class="card-text text-muted">Unique visitors</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Active Visitors</h5>
+                                    <h2 class="card-text" id="activeVisitors">0</h2>
+                                    <p class="card-text text-muted">Currently online</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Most Popular Page</h5>
+                                    <h4 class="card-text" id="mostPopularPage">-</h4>
+                                    <p class="card-text text-muted" id="mostPopularPageViews">0 views</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Top Entry Page</h5>
+                                    <h4 class="card-text" id="topEntryPage">-</h4>
+                                    <p class="card-text text-muted" id="topEntryPageCount">0 entries</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pages section -->
+                <section id="pages" class="mt-5">
+                    <h3 class="mb-4">Page Analytics</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Popular Pages
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Path</th>
+                                                    <th>Views</th>
+                                                    <th>Avg. Duration</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="popularPages">
+                                                <!-- Populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            Entry Pages
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Path</th>
+                                                            <th>Count</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="entryPages">
+                                                        <!-- Populated by JavaScript -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            Exit Pages
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Path</th>
+                                                            <th>Count</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="exitPages">
+                                                        <!-- Populated by JavaScript -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Visitors section -->
+                <section id="visitors" class="mt-5">
+                    <h3 class="mb-4">Visitor Details</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Browser</th>
+                                            <th>Device</th>
+                                            <th>Connected</th>
+                                            <th>Last Active</th>
+                                            <th>Pages Visited</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="visitorDetails">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Journeys section -->
+                <section id="journeys" class="mt-5">
+                    <h3 class="mb-4">User Journeys</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="journeysList">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
