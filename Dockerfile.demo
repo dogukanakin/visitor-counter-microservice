@@ -1,0 +1,12 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy demo files
+COPY demo/ ./
+
+# Expose the port the demo runs on
+EXPOSE 8080
+
+# Start the demo server
+CMD ["node", "serve.js"] 

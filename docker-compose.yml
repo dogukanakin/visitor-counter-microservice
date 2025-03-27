@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  visitor-counter:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    restart: unless-stopped
+
+  demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    ports:
+      - "8080:8080"
+    depends_on:
+      - visitor-counter
+    restart: unless-stopped 
