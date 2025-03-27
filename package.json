@@ -4,8 +4,8 @@
   "description": "Real-time visitor counter microservice",
   "main": "dist/index.js",
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build": "tsc && cp -r src/public dist/",
+    "prebuild": "rm -rf public",
+    "build": "tsc --outDir public && cp -r src/public public/",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "test": "jest",
