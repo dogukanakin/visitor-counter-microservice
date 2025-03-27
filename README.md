@@ -60,43 +60,7 @@ The easiest way to integrate the Visitor Counter into your website is to add the
 <script src="https://visitors.yourdomain.com/client.js"></script>
 ```
 
-This script will automatically add a visitor counter to the bottom right corner of your web page.
-
-### 2. Customized Integration
-
-You can customize the appearance and behavior of the counter by configuring parameters:
-
-```html
-<script>
-  // Visitor Counter configuration
-  window.visitorCounterConfig = {
-    position: 'top-right', // 'bottom-right', 'bottom-left', 'top-right', 'top-left'
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    textColor: 'white',
-    language: 'en', // 'en' or 'tr'
-    hideAfterSeconds: 5, // Hide after 5 seconds (0 = always show)
-  };
-</script>
-<script src="https://visitors.yourdomain.com/client.js"></script>
-```
-
-### 3. Integrate into Your Own Element
-
-```html
-<!-- The div where you want to display the visitor counter -->
-<div id="visitor-counter"></div>
-
-<script>
-  // Use this ID to integrate into your own element
-  window.visitorCounterConfig = {
-    useExistingElement: true,
-    // Other customizations...
-  };
-</script>
-<script src="https://visitors.yourdomain.com/client.js"></script>
-```
-
-### 4. Next.js Integration
+### 2. Next.js Integration
 
 For Next.js applications, you can use the Script component:
 
@@ -125,7 +89,7 @@ You can also manually set it based on your environment:
 />
 ```
 
-### 5. Complete HTML Page Example
+### 3. Complete HTML Page Example
 
 Here's a complete example of how to integrate the visitor counter into an HTML page:
 
@@ -140,10 +104,9 @@ Here's a complete example of how to integrate the visitor counter into an HTML p
 In this example:
 - We've included the visitor counter script at the bottom of the body
 - We're using `data-debug="true"` which enables debug mode (should be removed in production)
-- We've created a custom element with ID "my-visitor-counter" to house the counter
 - We've set the debug mode to automatically activate on localhost
 
-## �� API Reference
+## 📚 API Reference
 
 ### Swagger Documentation
 
@@ -200,6 +163,7 @@ The Visitor Counter service broadcasts the following events via WebSocket:
 - [Render](https://render.com)
 - [DigitalOcean App Platform](https://www.digitalocean.com/products/app-platform/)
 - [Heroku](https://heroku.com)
+- [Vercel](https://vercel.com)
 - Your own VPS or Server solutions
 
 ### Docker Deployment
@@ -212,15 +176,13 @@ docker build -t visitor-counter .
 docker run -p 5001:5001 -e PORT=5001 -e ALLOWED_ORIGINS=https://yourwebsite.com visitor-counter
 ```
 
-## 📝 License
 
-MIT
+👨‍💻 Developer: [Dogukan Akın](https://github.com/dogukanakinn)  
 
----
+🔗 Linkedin: [Dogukan Akın](https://www.linkedin.com/in/dogukanakinn/)
 
-Developer: [Your Name](https://github.com/yourusername)  
-Project: [GitHub Repository](https://github.com/dogukanakinn/visitor-counter-microservice)
+🌐 Personal Website: [Dogukan Akın](https://dogukanakin.com)
 
+📦 Project: [GitHub Repository](https://github.com/dogukanakinn/visitor-counter-microservice)
 
-
-
+🛠️ This project is using [Studyaitool](https://studyaitool.com)
