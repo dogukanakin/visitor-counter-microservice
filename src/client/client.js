@@ -1,13 +1,65 @@
 // Visitor Counter Integration
-// Add this script to any website to track visitors without displaying a counter
-// StudyAITool.com - Real-time Visitor Counter Microservice
+// Add this script to any website to track visitors
+// Visitor Counter Microservice
 
 (function() {
-  // Default configuration (will be overridden by server config if available)
-  const DEFAULT_CONFIG = {
-    localUrl: document.currentScript?.getAttribute('data-local-url') || 'http://localhost:5001',
-    productionUrl: document.currentScript?.getAttribute('data-production-url') || 'https://visitors.studyaitool.com',
-    allowedDomains: (document.currentScript?.getAttribute('data-allowed-domains') || 'studyaitool.com').split(',')
+  // Get script element and server path
+  const scriptElement = document.currentScript;
+  
+  // Check if we're on localhost development server
+  const isLocalhost = /^localhost$|^127\.([0-9]+\.){0,2}[0-9]+$|^\[::1?\]$/.test(window.location.hostname);
+  const isDevServer = window.location.port && ['5001', '5002', '5003'].includes(window.location.port);
+  const isFileProtocol = "file:" === window.location.protocol;
+  const isIframe = window !== window.parent;
+
+  // Debug mode (add data-debug to script tag to enable)
+  const debugMode = scriptElement?.getAttribute('data-debug') === 'true';
+  
+  // Disable tracking on unwanted environments
+  if ((isLocalhost && !isDevServer && !debugMode) || isFileProtocol || isIframe) {
+    console.log("Visitor Counter: Tracking disabled on localhost (not a dev server), file protocol, or inside iframe");
+    return;
+  }
+  
+  // Debug logging
+  function log(...args) {
+    if (debugMode) {
+      console.log("[Visitor Counter]", ...args);
+    }
+  }
+  
+  // Automatically determine server URL from script source
+  const getServerUrl = () => {
+    // If the script is loaded from our domain, use that domain
+    const scriptSrc = scriptElement?.src;
+    if (scriptSrc) {
+      try {
+        const scriptUrl = new URL(scriptSrc);
+        log("Using script source origin:", scriptUrl.origin);
+        // If script is loaded from our server, use that server URL
+        return scriptUrl.origin;
+      } catch (e) {
+        // If URL parsing fails, fallback to auto-detection
+        log("Failed to parse script URL:", e);
+      }
+    }
+
+    // If we're on dev server, use the current origin
+    if (isDevServer) {
+      log("Using dev server origin:", window.location.origin);
+      return window.location.origin;
+    }
+
+    // For production, use a dedicated tracking domain if available
+    const trackingDomain = scriptElement?.getAttribute('data-tracking-domain');
+    if (trackingDomain) {
+      log("Using tracking domain:", trackingDomain);
+      return trackingDomain.startsWith('http') ? trackingDomain : `https://${trackingDomain}`;
+    }
+
+    // Last resort: use the current origin (self-hosted mode)
+    log("Using current origin (self-hosted):", window.location.origin);
+    return window.location.origin;
   };
 
   // Store current page path
@@ -20,10 +72,10 @@
   script.onload = initVisitorCounter;
   document.head.appendChild(script);
 
-  async function initVisitorCounter() {
-    // Determine server URL
-    const serverUrl = await getServerUrl();
-    console.log(`Connecting to visitor counter service: ${serverUrl}`);
+  function initVisitorCounter() {
+    // Get server URL
+    const serverUrl = getServerUrl();
+    log("Connecting to server:", serverUrl);
     
     // Connect to socket server
     socket = io(serverUrl, {
@@ -31,14 +83,15 @@
       transports: ['websocket', 'polling'],
       query: {
         page: window.location.pathname,
-        referrer: document.referrer || 'direct'
+        referrer: document.referrer || 'direct',
+        hostname: window.location.hostname,
+        title: document.title
       }
     });
 
     // Connection events
     socket.on('connect', () => {
-      console.log('Visitor counter connected');
-      
+      log("Connected to visitor counter service");
       // Track the initial page view
       trackPageView();
       
@@ -58,19 +111,21 @@
         socket.disconnect();
       }
     });
-    
-    // Expose socket for debugging if needed
-    window.visitorCounterSocket = socket;
   }
   
   function trackPageView() {
     if (!socket) return;
     
     // Send page view event
-    socket.emit('page-view', { 
+    const pageData = { 
       path: window.location.pathname, 
-      referrer: document.referrer || 'direct'
-    });
+      referrer: document.referrer || 'direct',
+      title: document.title,
+      url: window.location.href
+    };
+    
+    log("Tracking page view:", pageData);
+    socket.emit('page-view', pageData);
     
     currentPath = window.location.pathname;
   }
@@ -114,6 +169,8 @@
   function handleUrlChange() {
     // Only track if the path has changed
     if (window.location.pathname !== currentPath) {
+      log("URL changed from", currentPath, "to", window.location.pathname);
+      
       // Send page exit for the previous page
       if (socket) {
         socket.emit('page-exit', { path: currentPath });
@@ -121,50 +178,6 @@
       
       // Track the new page
       trackPageView();
-    }
-  }
-
-  async function getServerUrl() {
-    const hostname = window.location.hostname;
-
-    try {
-      // Check if running from the visitor counter server itself
-      const isRunningFromVisitorServer = 
-        (hostname === 'localhost' || hostname === '127.0.0.1') && 
-        (window.location.port === '5003' || window.location.port === '5002' || window.location.port === '5001');
-      
-      // Only try to fetch config if running from the visitor counter server
-      if (isRunningFromVisitorServer) {
-        try {
-          // First try to get configuration from the server
-          const response = await fetch('/config');
-          if (response.ok) {
-            const config = await response.json();
-            
-            if (hostname === 'localhost' || hostname === '127.0.0.1') {
-              return config.localUrl;
-            } else if (config.allowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain))) {
-              return config.productionUrl;
-            } else {
-              return config.productionUrl;
-            }
-          }
-        } catch (configError) {
-          console.warn('Failed to fetch /config, using default values');
-        }
-      }
-      
-      // Use default configuration
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return DEFAULT_CONFIG.localUrl;
-      } else if (DEFAULT_CONFIG.allowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain))) {
-        return DEFAULT_CONFIG.productionUrl;
-      } else {
-        return DEFAULT_CONFIG.productionUrl;
-      }
-    } catch (error) {
-      console.warn('Error determining server URL, using fallback values:', error);
-      return DEFAULT_CONFIG.localUrl;
     }
   }
 })(); 

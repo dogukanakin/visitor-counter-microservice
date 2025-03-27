@@ -13,16 +13,6 @@ export const helpers = {
     return isLocalhost 
       ? `${req.protocol || 'http'}://${req.get('host') || 'localhost'}`
       : URL_CONFIG.PRODUCTION_URL;
-  },
-
-  // Client script içeriğini değiştir
-  modifyClientScript: (content: string): string => {
-    return content.replace(/DEFAULT_CONFIG = {[^}]*}/, 
-      `DEFAULT_CONFIG = {
-        localUrl: "${URL_CONFIG.LOCAL_URL}",
-        productionUrl: "${URL_CONFIG.PRODUCTION_URL}",
-        allowedDomains: "${URL_CONFIG.ALLOWED_DOMAINS.join(',')}"
-      }`);
   }
 };
 
@@ -100,11 +90,8 @@ export const mainController = {
       // Set content type
       res.set('Content-Type', 'application/javascript');
 
-      // Modify the script content
-      const modifiedContent = helpers.modifyClientScript(content);
-
-      // Send the JavaScript content
-      res.send(modifiedContent);
+      // No need to modify script content anymore, send as is
+      res.send(content);
     });
   }
 }; 
