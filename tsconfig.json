@@ -10,6 +10,5 @@
     "rootDir": "./src"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
-  "outputDirectory": "dist"
+  "exclude": ["node_modules"]
 } 
