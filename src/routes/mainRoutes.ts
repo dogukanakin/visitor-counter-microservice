@@ -51,16 +51,14 @@ export function createMainRoutes(socketService: SocketService): Router {
       // Set content type
       res.set('Content-Type', 'application/javascript');
 
-      // Send the script with configuration attributes
-      res.send(`
-        <script 
-          data-local-url="${URL_CONFIG.LOCAL_URL}"
-          data-production-url="${URL_CONFIG.PRODUCTION_URL}"
-          data-allowed-domains="${URL_CONFIG.ALLOWED_DOMAINS.join(',')}"
-        >
-        ${content}
-        </script>
-      `);
+      // Instead of wrapping in script tags, modify the config in the JS directly
+      const modifiedContent = content
+        .replace(/data-local-url="[^"]*"/, `data-local-url="${URL_CONFIG.LOCAL_URL}"`)
+        .replace(/data-production-url="[^"]*"/, `data-production-url="${URL_CONFIG.PRODUCTION_URL}"`)
+        .replace(/data-allowed-domains="[^"]*"/, `data-allowed-domains="${URL_CONFIG.ALLOWED_DOMAINS.join(',')}"`);
+
+      // Send just the JavaScript content
+      res.send(modifiedContent);
     });
   });
 
