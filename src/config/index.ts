@@ -18,7 +18,7 @@ export const URL_CONFIG = {
 
 // CORS configuration
 export const CORS_CONFIG = {
-  origin: '*', // Allow all origins in development
+  origin: SERVER_CONFIG.ALLOWED_ORIGINS, // Use allowed origins instead of '*'
   methods: ['GET', 'POST'],
   credentials: true
 };
@@ -26,7 +26,7 @@ export const CORS_CONFIG = {
 // Socket.io configuration
 export const SOCKET_CONFIG = {
   cors: {
-    origin: '*', // Allow all origins
+    origin: SERVER_CONFIG.ALLOWED_ORIGINS, // Use allowed origins instead of '*'
     methods: ['GET', 'POST'],
     credentials: true
   },
