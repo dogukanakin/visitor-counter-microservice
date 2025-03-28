@@ -11,9 +11,9 @@ export const SERVER_CONFIG = {
 
 // URL configuration
 export const URL_CONFIG = {
-  LOCAL_URL: process.env.LOCAL_URL || 'http://localhost:5001',
-  PRODUCTION_URL: process.env.PRODUCTION_URL || 'https://visitors.studyaitool.com',
-  ALLOWED_DOMAINS: process.env.ALLOWED_DOMAINS?.split(',') || ['studyaitool.com']
+  LOCAL_URL: process.env.LOCAL_URL || `http://localhost:${SERVER_CONFIG.PORT}`,
+  PRODUCTION_URL: process.env.PRODUCTION_URL || '',
+  ALLOWED_DOMAINS: process.env.ALLOWED_DOMAINS?.split(',') || []
 };
 
 // CORS configuration

@@ -13,6 +13,9 @@ A real-time visitor counter microservice that can be easily integrated into any 
 - **API Support**: Access visitor data through REST API
 - **Docker Support**: Easy deployment with Docker integration
 - **Analytics Dashboard**: Track visitor metrics
+- **Detailed Analytics**: Track page views, entry/exit pages, popular pages, and user journeys
+- **Swagger Documentation**: Interactive API documentation
+- **Vercel Deployment Support**: Deploy easily on Vercel platform
 
 ## 🔧 Installation
 
@@ -86,6 +89,7 @@ You can also manually set it based on your environment:
   strategy="afterInteractive"
   src="https://visitors.yourdomain.com/client.js"
   data-debug="true"  // Set to "false" in production
+  data-tracking-domain="https://visitors.yourdomain.com" // Optional: specify tracking domain
 />
 ```
 
@@ -105,6 +109,21 @@ In this example:
 - We've included the visitor counter script at the bottom of the body
 - We're using `data-debug="true"` which enables debug mode (should be removed in production)
 - We've set the debug mode to automatically activate on localhost
+
+## 📊 Analytics Dashboard
+
+The service includes a built-in analytics dashboard that provides insights about your website traffic:
+
+- **Overview**: Total visits, unique visitors, and real-time visitor count
+- **Popular Pages**: Most visited pages on your site
+- **Entry Pages**: Pages where visitors typically enter your site
+- **Exit Pages**: Pages from which visitors leave your site
+- **User Journeys**: Common paths users take through your site
+
+Access the dashboard at:
+```
+https://visitors.yourdomain.com/dashboard
+```
 
 ## 📚 API Reference
 
@@ -132,6 +151,9 @@ The Visitor Counter service broadcasts the following events via WebSocket:
   { count: 5 }
   ```
 
+- `page-view`: Emitted by clients when a page is viewed
+- `page-exit`: Emitted by clients when leaving a page
+
 ### REST API Endpoints
 
 - `GET /api/visitors`: Returns the current visitor count
@@ -155,6 +177,16 @@ The Visitor Counter service broadcasts the following events via WebSocket:
   }
   ```
 
+#### Analytics API Endpoints
+
+- `GET /api/analytics`: Get overview analytics
+- `GET /api/analytics/pages`: Get page view statistics
+- `GET /api/analytics/pages/popular`: Get most popular pages
+- `GET /api/analytics/pages/entry`: Get most common entry pages
+- `GET /api/analytics/pages/exit`: Get most common exit pages
+- `GET /api/analytics/journeys`: Get user journey statistics
+- `GET /api/analytics/clients`: Get client information
+
 ## 🚀 Deployment
 
 ### Recommended Services
@@ -176,6 +208,57 @@ docker build -t visitor-counter .
 docker run -p 5001:5001 -e PORT=5001 -e ALLOWED_ORIGINS=https://yourwebsite.com visitor-counter
 ```
 
+### Vercel Deployment Notes
+
+When deploying to Vercel, keep in mind that Socket.IO on serverless platforms has some limitations:
+
+1. Configure your `vercel.json` file:
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "src/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
+  ]
+}
+```
+
+2. For best performance on Vercel, configure the client to use polling only:
+```html
+<script 
+  src="https://visitors.yourdomain.com/client.js" 
+  data-transport="polling">
+</script>
+```
+
+## 📄 Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| PORT | Server port | 5001 |
+| ALLOWED_ORIGINS | Comma-separated list of origins allowed to connect | http://localhost:3000 |
+| ALLOWED_DOMAINS | Comma-separated list of domains allowed to use the service | studyaitool.com |
+| LOCAL_URL | URL for local development | http://localhost:5001 |
+| PRODUCTION_URL | URL for production deployment | - |
+
+## 🔍 Troubleshooting
+
+- **Connection issues**: Ensure your CORS settings in `.env` file include your website's domain
+- **High CPU usage**: Check for memory leaks by monitoring the server logs
+- **Socket.IO errors**: Make sure your client and server versions are compatible
+- **Vercel deployment issues**: Socket.IO has limitations on serverless platforms - consider using only HTTP polling transport
 
 👨‍💻 Developer: [Dogukan Akın](https://github.com/dogukanakinn)  
 
